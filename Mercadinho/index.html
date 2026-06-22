@@ -15,6 +15,7 @@
   <aside class="sidebar">
     <div class="sb-logo">🛒</div>
     <nav class="sb-nav">
+
       <span class="nav-link active" id="nav-home" onclick="
         document.querySelectorAll('.pag').forEach(p => p.style.display='none');
         document.getElementById('pag-home').style.display='block';
@@ -46,20 +47,37 @@
         this.classList.add('active');
         renderEditar();
       ">Excluir / Editar</span>
+
+      <div class="sb-divider"></div>
+
+      <span class="nav-link" id="nav-compras" onclick="
+        document.querySelectorAll('.pag').forEach(p => p.style.display='none');
+        document.getElementById('pag-compras').style.display='block';
+        document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+        this.classList.add('active');
+        carregarSelectProdutos();
+        renderCompras();
+      ">Compras</span>
+
+      <span class="nav-link" id="nav-notas" onclick="
+        document.querySelectorAll('.pag').forEach(p => p.style.display='none');
+        document.getElementById('pag-notas').style.display='block';
+        document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+        this.classList.add('active');
+        renderNotas();
+      ">Notas Fiscais</span>
+
     </nav>
   </aside>
 
+  <!-- CONTEÚDO -->
   <main class="conteudo">
 
     <!-- HOME -->
     <div class="pag" id="pag-home" style="display:block">
       <div class="home-center">
         <h1 class="home-titulo">Mercadinho BD</h1>
-        <p class="home-desc">Objetivo: criar um sisteminha de mercado </p>
-        <p>Funcionalidades: criar, atualizar, excluir produtos. <br/>Solução: PostgreSQL </p>
-        <br/>Integrantes: Julio Cesar, Rian Gustavo, Samuel Ramiro.<br/>Use o menu lateral para navegar ou os cards a baixo.</p>
-
-
+        <p class="home-desc">Sistema de gestão de produtos e estoque.<br/>Use o menu lateral para navegar.</p>
         <div class="home-cards">
 
           <div class="home-card" onclick="
@@ -92,6 +110,29 @@
           ">
             <span class="home-card-ico">✏️</span>
             <span class="home-card-lbl">Editar / Excluir</span>
+          </div>
+
+          <div class="home-card" onclick="
+            document.querySelectorAll('.pag').forEach(p => p.style.display='none');
+            document.getElementById('pag-compras').style.display='block';
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+            document.getElementById('nav-compras').classList.add('active');
+            carregarSelectProdutos();
+            renderCompras();
+          ">
+            <span class="home-card-ico">🛒</span>
+            <span class="home-card-lbl">Compras</span>
+          </div>
+
+          <div class="home-card" onclick="
+            document.querySelectorAll('.pag').forEach(p => p.style.display='none');
+            document.getElementById('pag-notas').style.display='block';
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+            document.getElementById('nav-notas').classList.add('active');
+            renderNotas();
+          ">
+            <span class="home-card-ico">🧾</span>
+            <span class="home-card-lbl">Notas Fiscais</span>
           </div>
 
         </div>
@@ -176,7 +217,6 @@
         <input class="inp busca" id="busca-edit" placeholder="🔍 Buscar produto..." oninput="renderEditar()"/>
       </div>
 
-      <!-- Painel de edição -->
       <div id="painel-edicao" class="form-card" style="display:none">
         <div class="edit-header">
           <span id="edit-titulo">Editando produto</span>
@@ -235,6 +275,102 @@
         <div id="vazio-edit" class="vazio">
           <span>🔍</span>
           <p>Nenhum produto encontrado.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPRAS -->
+    <div class="pag" id="pag-compras" style="display:none">
+      <div class="pag-header">
+        <h2 class="pag-titulo">Compras</h2>
+      </div>
+      <div class="form-card compra-card">
+        <div class="compra-head">
+          <div>
+            <h3 class="compra-subtitulo">Produtos da loja</h3>
+            <p class="compra-subdesc">Escolha um ou mais produtos antes de fechar a compra.</p>
+          </div>
+        </div>
+        <div id="lista-produtos-compra" class="produto-grid"></div>
+      </div>
+
+      <div class="form-card compra-card">
+        <div class="compra-head">
+          <div>
+            <h3 class="compra-subtitulo">Carrinho</h3>
+            <p class="compra-subdesc">Os itens selecionados ficam aqui até você registrar a compra.</p>
+          </div>
+          <button class="btn-cancel" onclick="limparCarrinho()">Limpar carrinho</button>
+        </div>
+        <div id="carrinho-vazio" class="vazio carrinho-vazio">
+          <span>🛒</span>
+          <p>Nenhum item adicionado ao carrinho ainda.</p>
+        </div>
+        <div id="carrinho-itens" class="carrinho-lista"></div>
+        <div class="carrinho-footer">
+          <div>
+            <span class="carrinho-total-label">Total da compra</span>
+            <strong id="carrinho-total">R$ 0,00</strong>
+          </div>
+          <button class="btn-add" onclick="registrarCompra()">✓ Registrar compra</button>
+        </div>
+      </div>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Nota</th>
+              <th>Data</th>
+              <th>Itens</th>
+              <th>Total</th>
+              <th class="text-center">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-compras"></tbody>
+        </table>
+        <div id="vazio-compras" class="vazio">
+          <span>🛒</span>
+          <p>Nenhuma compra registrada ainda.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTAS FISCAIS -->
+    <div class="pag" id="pag-notas" style="display:none">
+      <div class="pag-header">
+        <h2 class="pag-titulo">Notas Fiscais</h2>
+      </div>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Nº Nota</th>
+              <th>Data</th>
+              <th>Itens</th>
+              <th>Valor Total</th>
+              <th class="text-center">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-notas"></tbody>
+        </table>
+        <div id="vazio-notas" class="vazio">
+          <span>🧾</span>
+          <p>Nenhuma nota fiscal disponível.<br/>As notas são geradas automaticamente a cada compra registrada.</p>
+        </div>
+      </div>
+
+      <div id="painel-nota-detalhe" class="form-card" style="display:none">
+        <div class="edit-header">
+          <div>
+            <span id="nota-detalhe-titulo">Nota fiscal</span>
+            <div id="nota-detalhe-sub" class="nota-detalhe-sub"></div>
+          </div>
+          <button class="btn-fechar" onclick="fecharDetalheNota()">✕ Fechar</button>
+        </div>
+        <div id="nota-detalhe-itens" class="nota-detalhe-itens"></div>
+        <div class="nota-detalhe-total">
+          <strong>Total: <span id="nota-detalhe-total"></span></strong>
         </div>
       </div>
     </div>
